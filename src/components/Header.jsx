@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
 import ProfileDropdown from '../UserInfo&Profile/ProfileDropdown';
 import { FaSearch } from 'react-icons/fa';
 import { FiShoppingCart } from 'react-icons/fi';
-import axios from 'axios';
 
 // Enhanced Logo component with better navigation
 const Logo = ({ onClick }) => {
@@ -97,33 +96,8 @@ class ErrorBoundary extends React.Component {
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, cartCount } = useContext(AuthContext);
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5376';
-
-  useEffect(() => {
-    const fetchCartCount = async () => {
-      if (user) {
-        try {
-          const token = localStorage.getItem('token');
-          const response = await axios.get(`${API_URL}/api/cart`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const items = response.data.items || [];
-          const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-          setCartCount(totalItems);
-        } catch (err) {
-          console.error('Error fetching cart count:', err);
-          setCartCount(0);
-        }
-      } else {
-        setCartCount(0);
-      }
-    };
-
-    fetchCartCount();
-  }, [user]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -133,13 +107,12 @@ const Header = () => {
   };
 
   const handleProfileClick = () => {
-    setIsProfileOpen(!isProfileOpen);
+    setIsProfileOpen((prev) => !prev);
   };
 
   const handleLogout = () => {
     logout();
     setIsProfileOpen(false);
-    setCartCount(0); // Reset cart count on logout
     navigate('/');
   };
 
@@ -294,6 +267,701 @@ const Header = () => {
 };
 
 export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useContext, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { motion } from 'framer-motion';
+// import { AuthContext } from '../context/AuthContext';
+// import ProfileDropdown from '../UserInfo&Profile/ProfileDropdown';
+// import { FaSearch } from 'react-icons/fa';
+// import { FiShoppingCart } from 'react-icons/fi';
+// import axios from 'axios';
+
+// // Enhanced Logo component with better navigation
+// const Logo = ({ onClick }) => {
+//   const letterVariants = {
+//     initial: { opacity: 0, y: 20 },
+//     animate: (i) => ({
+//       opacity: 1,
+//       y: 0,
+//       transition: { delay: i * 0.1, duration: 0.5 },
+//     }),
+//     hover: { y: -5, transition: { duration: 0.2 } },
+//   };
+
+//   const cartVariants = {
+//     initial: { scale: 0, rotate: -180 },
+//     animate: {
+//       scale: 1,
+//       rotate: 0,
+//       transition: { delay: 0.6, type: 'spring', stiffness: 100 },
+//     },
+//     hover: { scale: 1.2, rotate: 10, transition: { duration: 0.3 } },
+//   };
+
+//   const text = 'E-Shop';
+
+//   return (
+//     <motion.div
+//       key="logo"
+//       className="flex items-center h-12 cursor-pointer flex-shrink-0"
+//       variants={{
+//         initial: { scale: 0, opacity: 0 },
+//         animate: {
+//           scale: 1,
+//           opacity: 1,
+//           transition: { type: 'spring', stiffness: 260, damping: 20, duration: 0.5 },
+//         },
+//         hover: { scale: 1.05, transition: { type: 'spring', stiffness: 400 } },
+//       }}
+//       initial="initial"
+//       animate="animate"
+//       whileHover="hover"
+//       onClick={onClick}
+//     >
+//       <div className="flex">
+//         {text.split('').map((char, index) => (
+//           <motion.span
+//             key={`logo-char-${index}`}
+//             className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+//             variants={letterVariants}
+//             custom={index}
+//           >
+//             {char}
+//           </motion.span>
+//         ))}
+//       </div>
+//       <motion.svg
+//         className="ml-1 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+//         fill="none"
+//         stroke="currentColor"
+//         viewBox="0 0 24 24"
+//         variants={cartVariants}
+//       >
+//         <path
+//           strokeLinecap="round"
+//           strokeLinejoin="round"
+//           strokeWidth="2"
+//           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+//         />
+//       </motion.svg>
+//     </motion.div>
+//   );
+// };
+
+// class ErrorBoundary extends React.Component {
+//   state = { hasError: false };
+
+//   static getDerivedStateFromError() {
+//     return { hasError: true };
+//   }
+
+//   render() {
+//     if (this.state.hasError) {
+//       return <div className="text-red-500 text-center">Something went wrong with the logo.</div>;
+//     }
+//     return this.props.children;
+//   }
+// }
+
+// const Header = () => {
+//   const [searchQuery, setSearchQuery] = useState('');
+//   const [isProfileOpen, setIsProfileOpen] = useState(false);
+//   const [cartCount, setCartCount] = useState(0);
+//   const { user, logout } = useContext(AuthContext);
+//   const navigate = useNavigate();
+//   const API_URL = 'http://localhost:5376';
+
+//   useEffect(() => {
+//     const fetchCartCount = async () => {
+//       if (user) {
+//         try {
+//           const token = localStorage.getItem('token');
+//           const response = await axios.get(`${API_URL}/api/cart`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//           });
+//           const items = response.data.items || [];
+//           const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+//           setCartCount(totalItems);
+//         } catch (err) {
+//           console.error('Error fetching cart count:', err);
+//           setCartCount(0);
+//         }
+//       } else {
+//         setCartCount(0);
+//       }
+//     };
+
+//     fetchCartCount();
+//   }, [user]);
+
+//   const handleSearch = (e) => {
+//     e.preventDefault();
+//     if (searchQuery.trim()) {
+//       navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+//     }
+//   };
+
+//   // Toggle profile dropdown
+//   const handleProfileClick = () => {
+//     setIsProfileOpen((prev) => !prev);
+//   };
+
+//   const handleLogout = () => {
+//     logout();
+//     setIsProfileOpen(false);
+//     setCartCount(0); // Reset cart count on logout
+//     navigate('/');
+//   };
+
+//   const buttonVariants = {
+//     initial: { y: 20, opacity: 0 },
+//     animate: {
+//       y: 0,
+//       opacity: 1,
+//       transition: { delay: 0.3, duration: 0.4 },
+//     },
+//     hover: {
+//       scale: 1.1,
+//       transition: { type: 'spring', stiffness: 300 },
+//     },
+//   };
+
+//   const cartButtonVariants = {
+//     initial: { y: 20, opacity: 0 },
+//     animate: {
+//       y: 0,
+//       opacity: 1,
+//       transition: { delay: 0.4, duration: 0.4 },
+//     },
+//     hover: {
+//       scale: 1.1,
+//       transition: { type: 'spring', stiffness: 300 },
+//     },
+//   };
+
+//   const searchVariants = {
+//     initial: { width: 0, opacity: 0 },
+//     animate: {
+//       width: 'auto',
+//       opacity: 1,
+//       transition: { delay: 0.2, duration: 0.6, ease: 'easeOut' },
+//     },
+//   };
+
+//   return (
+//     <motion.header
+//       key="header"
+//       className="bg-white shadow-lg py-2 px-4 sticky top-0 z-50"
+//       initial={{ y: -100 }}
+//       animate={{ y: 0 }}
+//       transition={{ type: 'spring', stiffness: 120, damping: 15 }}
+//     >
+//       <div className="container mx-auto flex items-center justify-between gap-2">
+//         {/* Logo Section */}
+//         <div className="flex-shrink-0">
+//           <ErrorBoundary>
+//             <Logo onClick={() => navigate('/')} />
+//           </ErrorBoundary>
+//         </div>
+
+//         {/* Search Section */}
+//         <motion.form
+//           key="search-form"
+//           onSubmit={handleSearch}
+//           className="flex-1 min-w-0"
+//           variants={searchVariants}
+//           initial="initial"
+//           animate="animate"
+//         >
+//           <div className="relative">
+//             <input
+//               type="text"
+//               placeholder="Search..."
+//               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//             />
+//             <motion.button
+//               type="submit"
+//               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800"
+//             >
+//               <FaSearch />
+//             </motion.button>
+//           </div>
+//         </motion.form>
+
+//         {/* Auth Section */}
+//         <div className="flex items-center gap-2 flex-shrink-0">
+//           {/* Cart Button */}
+//           <motion.button
+//             key="cart-button"
+//             className="relative p-2 text-gray-700 hover:text-blue-900"
+//             variants={cartButtonVariants}
+//             initial="initial"
+//             animate="animate"
+//             whileHover="hover"
+//             onClick={() => navigate('/cart')}
+//           >
+//             <FiShoppingCart className="w-6 h-6 text-blue-600" />
+//             {cartCount > 0 && (
+//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+//                 {cartCount}
+//               </span>
+//             )}
+//           </motion.button>
+
+//           {user ? (
+//             <div className="relative">
+//               <motion.div
+//                 key="profile-avatar"
+//                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold cursor-pointer shadow-md"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover="hover"
+//                 onClick={handleProfileClick}
+//               >
+//                 {user.first_name?.charAt(0).toUpperCase() || 'U'}
+//               </motion.div>
+//               <ProfileDropdown
+//                 isOpen={isProfileOpen} // Fixed: Changed isOpenProfile to isProfileOpen
+//                 user={user}
+//                 onClose={() => setIsProfileOpen(false)}
+//                 onLogout={handleLogout}
+//               />
+//             </div>
+//           ) : (
+//             <>
+//               <motion.button
+//                 key="login-button"
+//                 className="px-2 py-1 text-sm text-gray-700 hover:text-blue-600 font-medium"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover="hover"
+//                 onClick={() => navigate('/login')}
+//               >
+//                 Login
+//               </motion.button>
+//               <motion.button
+//                 key="register-button"
+//                 className="px-2 py-1 text-sm bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded shadow-sm hover:opacity-90"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 onClick={() => navigate('/register')}
+//               >
+//                 Register
+//               </motion.button>
+//             </>
+//           )}
+//         </div>
+//       </div>
+//     </motion.header>
+//   );
+// };
+
+// export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useContext, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { motion } from 'framer-motion';
+// import { AuthContext } from '../context/AuthContext';
+// import ProfileDropdown from '../UserInfo&Profile/ProfileDropdown';
+// import { FaSearch } from 'react-icons/fa';
+// import { FiShoppingCart } from 'react-icons/fi';
+// import axios from 'axios';
+
+// // Enhanced Logo component with better navigation
+// const Logo = ({ onClick }) => {
+//   const letterVariants = {
+//     initial: { opacity: 0, y: 20 },
+//     animate: (i) => ({
+//       opacity: 1,
+//       y: 0,
+//       transition: { delay: i * 0.1, duration: 0.5 },
+//     }),
+//     hover: { y: -5, transition: { duration: 0.2 } },
+//   };
+
+//   const cartVariants = {
+//     initial: { scale: 0, rotate: -180 },
+//     animate: {
+//       scale: 1,
+//       rotate: 0,
+//       transition: { delay: 0.6, type: 'spring', stiffness: 100 },
+//     },
+//     hover: { scale: 1.2, rotate: 10, transition: { duration: 0.3 } },
+//   };
+
+//   const text = 'E-Shop';
+
+//   return (
+//     <motion.div
+//       key="logo"
+//       className="flex items-center h-12 cursor-pointer flex-shrink-0"
+//       variants={{
+//         initial: { scale: 0, opacity: 0 },
+//         animate: {
+//           scale: 1,
+//           opacity: 1,
+//           transition: { type: 'spring', stiffness: 260, damping: 20, duration: 0.5 },
+//         },
+//         hover: { scale: 1.05, transition: { type: 'spring', stiffness: 400 } },
+//       }}
+//       initial="initial"
+//       animate="animate"
+//       whileHover="hover"
+//       onClick={onClick}
+//     >
+//       <div className="flex">
+//         {text.split('').map((char, index) => (
+//           <motion.span
+//             key={`logo-char-${index}`}
+//             className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+//             variants={letterVariants}
+//             custom={index}
+//           >
+//             {char}
+//           </motion.span>
+//         ))}
+//       </div>
+//       <motion.svg
+//         className="ml-1 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+//         fill="none"
+//         stroke="currentColor"
+//         viewBox="0 0 24 24"
+//         variants={cartVariants}
+//       >
+//         <path
+//           strokeLinecap="round"
+//           strokeLinejoin="round"
+//           strokeWidth="2"
+//           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+//         />
+//       </motion.svg>
+//     </motion.div>
+//   );
+// };
+
+// class ErrorBoundary extends React.Component {
+//   state = { hasError: false };
+
+//   static getDerivedStateFromError() {
+//     return { hasError: true };
+//   }
+
+//   render() {
+//     if (this.state.hasError) {
+//       return <div className="text-red-500 text-center">Something went wrong with the logo.</div>;
+//     }
+//     return this.props.children;
+//   }
+// }
+
+// const Header = () => {
+//   const [searchQuery, setSearchQuery] = useState('');
+//   const [isProfileOpen, setIsProfileOpen] = useState(false);
+//   const [cartCount, setCartCount] = useState(0);
+//   const { user, logout } = useContext(AuthContext);
+//   const navigate = useNavigate();
+//   const API_URL = 'http://localhost:5376';
+
+//   useEffect(() => {
+//     const fetchCartCount = async () => {
+//       if (user) {
+//         try {
+//           const token = localStorage.getItem('token');
+//           const response = await axios.get(`${API_URL}/api/cart`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//           });
+//           const items = response.data.items || [];
+//           const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+//           setCartCount(totalItems);
+//         } catch (err) {
+//           console.error('Error fetching cart count:', err);
+//           setCartCount(0);
+//         }
+//       } else {
+//         setCartCount(0);
+//       }
+//     };
+
+//     fetchCartCount();
+//   }, [user]);
+
+//   const handleSearch = (e) => {
+//     e.preventDefault();
+//     if (searchQuery.trim()) {
+//       navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+//     }
+//   };
+
+//   const handleProfileClick = () => {
+//     setIsProfileOpen(!isProfileOpen);
+//   };
+
+//   const handleLogout = () => {
+//     logout();
+//     setIsProfileOpen(false);
+//     setCartCount(0); // Reset cart count on logout
+//     navigate('/');
+//   };
+
+//   const buttonVariants = {
+//     initial: { y: 20, opacity: 0 },
+//     animate: {
+//       y: 0,
+//       opacity: 1,
+//       transition: { delay: 0.3, duration: 0.4 },
+//     },
+//     hover: {
+//       scale: 1.1,
+//       transition: { type: 'spring', stiffness: 300 },
+//     },
+//   };
+
+//   const cartButtonVariants = {
+//     initial: { y: 20, opacity: 0 },
+//     animate: {
+//       y: 0,
+//       opacity: 1,
+//       transition: { delay: 0.4, duration: 0.4 },
+//     },
+//     hover: {
+//       scale: 1.1,
+//       transition: { type: 'spring', stiffness: 300 },
+//     },
+//   };
+
+//   const searchVariants = {
+//     initial: { width: 0, opacity: 0 },
+//     animate: {
+//       width: 'auto',
+//       opacity: 1,
+//       transition: { delay: 0.2, duration: 0.6, ease: 'easeOut' },
+//     },
+//   };
+
+//   return (
+//     <motion.header
+//       key="header"
+//       className="bg-white shadow-lg py-2 px-4 sticky top-0 z-50"
+//       initial={{ y: -100 }}
+//       animate={{ y: 0 }}
+//       transition={{ type: 'spring', stiffness: 120, damping: 15 }}
+//     >
+//       <div className="container mx-auto flex items-center justify-between gap-2">
+//         {/* Logo Section */}
+//         <div className="flex-shrink-0">
+//           <ErrorBoundary>
+//             <Logo onClick={() => navigate('/')} />
+//           </ErrorBoundary>
+//         </div>
+
+//         {/* Search Section */}
+//         <motion.form
+//           key="search-form"
+//           onSubmit={handleSearch}
+//           className="flex-1 min-w-0"
+//           variants={searchVariants}
+//           initial="initial"
+//           animate="animate"
+//         >
+//           <div className="relative">
+//             <input
+//               type="text"
+//               placeholder="Search..."
+//               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+//               value={searchQuery}
+//               onChange={(e) => setSearchQuery(e.target.value)}
+//             />
+//             <motion.button
+//               type="submit"
+//               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800"
+//             >
+//               <FaSearch />
+//             </motion.button>
+//           </div>
+//         </motion.form>
+
+//         {/* Auth Section */}
+//         <div className="flex items-center gap-2 flex-shrink-0">
+//           {/* Cart Button */}
+//           <motion.button
+//             key="cart-button"
+//             className="relative p-2 text-gray-700 hover:text-blue-900"
+//             variants={cartButtonVariants}
+//             initial="initial"
+//             animate="animate"
+//             whileHover="hover"
+//             onClick={() => navigate('/cart')}
+//           >
+//             <FiShoppingCart className="w-6 h-6 text-blue-600" />
+//             {cartCount > 0 && (
+//               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+//                 {cartCount}
+//               </span>
+//             )}
+//           </motion.button>
+
+//           {user ? (
+//             <div className="relative">
+//               <motion.div
+//                 key="profile-avatar"
+//                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold cursor-pointer shadow-md"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover="hover"
+//                 onClick={handleProfileClick}
+//               >
+//                 {user.first_name?.charAt(0).toUpperCase() || 'U'}
+//               </motion.div>
+//               <ProfileDropdown
+//                 isOpen={isProfileOpen}
+//                 user={user}
+//                 onClose={() => setIsProfileOpen(false)}
+//                 onLogout={handleLogout}
+//               />
+//             </div>
+//           ) : (
+//             <>
+//               <motion.button
+//                 key="login-button"
+//                 className="px-2 py-1 text-sm text-gray-700 hover:text-blue-600 font-medium"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover="hover"
+//                 onClick={() => navigate('/login')}
+//               >
+//                 Login
+//               </motion.button>
+//               <motion.button
+//                 key="register-button"
+//                 className="px-2 py-1 text-sm bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium rounded shadow-sm hover:opacity-90"
+//                 variants={buttonVariants}
+//                 initial="initial"
+//                 animate="animate"
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 onClick={() => navigate('/register')}
+//               >
+//                 Register
+//               </motion.button>
+//             </>
+//           )}
+//         </div>
+//       </div>
+//     </motion.header>
+//   );
+// };
+
+// export default Header;
 
 
 

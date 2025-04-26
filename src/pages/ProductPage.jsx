@@ -9,7 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 const ProductPage = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, addToCart } = useContext(AuthContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,33 +18,18 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [cartMessage, setCartMessage] = useState(null);
-  const [cartItems, setCartItems] = useState([]);
-  const API_URL = 'http://localhost:5376';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        // Fetch product details
-        const productResponse = await axios.get(`${API_URL}/api/products/details/${productId}`);
+        const productResponse = await axios.get(`http://localhost:5376/api/products/details/${productId}`);
         if (!productResponse.data.product) {
           throw new Error('Product not found');
         }
         setProduct(productResponse.data.product);
-
-        // Fetch related products
-        const relatedResponse = await axios.get(`${API_URL}/api/products/search?category=${productResponse.data.product.category}&limit=4`);
+        const relatedResponse = await axios.get(`http://localhost:5376/api/products/search?category=${productResponse.data.product.category}&limit=4`);
         setRelatedProducts(relatedResponse.data.products || []);
-
-        // Fetch cart items if user is logged in
-        if (user) {
-          const token = localStorage.getItem('token');
-          const cartResponse = await axios.get(`${API_URL}/api/cart`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setCartItems(cartResponse.data.items || []);
-        }
       } catch (err) {
         console.error('Fetch Error:', err);
         setError(err.response?.data?.message || err.message || 'Failed to load product');
@@ -54,14 +39,14 @@ const ProductPage = () => {
     };
 
     fetchData();
-  }, [productId, user]);
+  }, [productId]);
 
   const handleImageError = (index) => {
-    setImageLoadErrors(prev => ({ ...prev, [index]: true }));
+    setImageLoadErrors((prev) => ({ ...prev, [index]: true }));
   };
 
   const navigateImage = (direction) => {
-    setSelectedImageIndex(prev => {
+    setSelectedImageIndex((prev) => {
       const allImages = [...(Array.isArray(product.images) ? product.images : []), ...(Array.isArray(product.descriptionImages) ? product.descriptionImages : [])].filter(Boolean);
       if (direction === 'prev') {
         return prev === 0 ? allImages.length - 1 : prev - 1;
@@ -72,87 +57,36 @@ const ProductPage = () => {
   };
 
   const handleQuantityChange = (change) => {
-    if (!product) return;
-    const maxQuantity = Math.min(product.quantity || 6, 6);
-    setQuantity(prev => Math.max(1, Math.min(maxQuantity, prev + change)));
+    setQuantity((prev) => {
+      const newQuantity = prev + change;
+      const maxQuantity = Math.min(product.quantity, 6);
+      if (newQuantity < 1) {
+        return 1;
+      }
+      if (newQuantity > maxQuantity) {
+        setCartMessage({
+          type: 'warning',
+          text: `You can only add up to ${maxQuantity} units of this product.`,
+        });
+        setTimeout(() => setCartMessage(null), 3000);
+        return prev;
+      }
+      return newQuantity;
+    });
   };
 
   const handleAddToCart = async () => {
-    if (!user) {
+    const result = await addToCart(productId, quantity);
+    if (result.redirectToLogin) {
       localStorage.setItem('redirectAfterLogin', '/cart');
       navigate('/login');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      const existingCartItem = cartItems.find(item => item.productId === productId);
-      const maxQuantity = Math.min(product.quantity || 6, 6);
-
-      if (existingCartItem) {
-        // Calculate new quantity
-        const newQuantity = existingCartItem.quantity + quantity;
-
-        if (newQuantity > maxQuantity) {
-          setCartMessage({
-            type: 'warning',
-            text: `You cannot add more than ${maxQuantity} items of ${product.productName} to your cart.`,
-          });
-          setTimeout(() => setCartMessage(null), 3000);
-          return;
-        }
-
-        // Update existing cart item
-        await axios.put(
-          `${API_URL}/api/cart/update`,
-          { cartId: existingCartItem.cartId, quantity: newQuantity },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        // Update local cart items
-        setCartItems(prevItems =>
-          prevItems.map(item =>
-            item.cartId === existingCartItem.cartId ? { ...item, quantity: newQuantity } : item
-          )
-        );
-
-        setCartMessage({ type: 'success', text: 'Cart updated successfully!' });
-        setTimeout(() => navigate('/cart'), 1000);
-      } else {
-        // Check if adding new quantity exceeds limit
-        if (quantity > maxQuantity) {
-          setCartMessage({
-            type: 'warning',
-            text: `You cannot add more than ${maxQuantity} items of ${product.productName} to your cart.`,
-          });
-          setTimeout(() => setCartMessage(null), 3000);
-          return;
-        }
-
-        // Add new cart item
-        await axios.post(
-          `${API_URL}/api/cart/add`,
-          { productId, quantity },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        // Refetch cart to get new cartId
-        const cartResponse = await axios.get(`${API_URL}/api/cart`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCartItems(cartResponse.data.items || []);
-
-        setCartMessage({ type: 'success', text: 'Product added to cart!' });
+    } else {
+      setCartMessage({ type: result.success ? 'success' : 'error', text: result.message });
+      if (result.success) {
         setTimeout(() => navigate('/cart'), 1000);
       }
-    } catch (err) {
-      console.error('Error adding to cart:', err);
-      setCartMessage({
-        type: 'error',
-        text: err.response?.data?.message || 'Failed to add product to cart',
-      });
-      setTimeout(() => setCartMessage(null), 3000);
     }
+    setTimeout(() => setCartMessage(null), 3000);
   };
 
   if (loading) return (
@@ -246,13 +180,13 @@ const ProductPage = () => {
                   </AnimatePresence>
                   {allImages.length > 1 && (
                     <>
-                      <button 
+                      <button
                         onClick={() => navigateImage('prev')}
                         className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md hover:bg-white transition-colors"
                       >
                         <FiChevronLeft className="w-6 h-6 text-gray-800" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => navigateImage('next')}
                         className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-md hover:bg-white transition-colors"
                       >
@@ -358,16 +292,16 @@ const ProductPage = () => {
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center border rounded-md">
-                <button 
+                <button
                   onClick={() => handleQuantityChange(-1)}
                   className="px-3 py-1 text-lg font-medium text-gray-600 hover:bg-gray-100"
                 >
                   -
                 </button>
                 <span className="px-4 py-1 text-lg font-medium">{quantity}</span>
-                <button 
+                <button
                   onClick={() => handleQuantityChange(1)}
-                  className="px-3 py-1 text-lg font-medium text-gray-600 hover:bg-gray-100"
+                  className="px-3 py-1 font-medium text-lg text-gray-600 hover:bg-gray-100"
                 >
                   +
                 </button>
@@ -375,7 +309,7 @@ const ProductPage = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
-              <button 
+              <button
                 onClick={handleAddToCart}
                 className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center transition-colors"
                 disabled={product.quantity <= 0}
@@ -435,7 +369,7 @@ const ProductPage = () => {
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {relatedProducts.map(product => (
+              {relatedProducts.map((product) => (
                 <ProductCard key={product.productId} product={product} />
               ))}
             </div>
@@ -447,6 +381,13 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
+
+
+
+
+
+
 
 
 
