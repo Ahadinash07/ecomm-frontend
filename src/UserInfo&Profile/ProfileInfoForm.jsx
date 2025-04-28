@@ -128,7 +128,7 @@ const ProfileInfoForm = ({ user }) => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.put(
-          'http://localhost:5376/api/auth/profile',
+          'https://ecomm-backend-blue.vercel.app/api/auth/profile',
           formData,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -522,7 +522,7 @@ export default ProfileInfoForm;
 //       try {
 //         const token = localStorage.getItem('token');
 //         const response = await axios.put(
-//           'http://localhost:5376/api/auth/profile',
+//           'https://ecomm-backend-blue.vercel.app/api/auth/profile',
 //           formData,
 //           {
 //             headers: { Authorization: `Bearer ${token}` },
@@ -834,7 +834,7 @@ export default ProfileInfoForm;
 //     try {
 //       const token = localStorage.getItem('token');
 //       const response = await axios.put(
-//         'http://localhost:5376/api/auth/profile',
+//         'https://ecomm-backend-blue.vercel.app/api/auth/profile',
 //         formData,
 //         {
 //           headers: { Authorization: `Bearer ${token}` },
@@ -1024,7 +1024,7 @@ export default ProfileInfoForm;
 //     try {
 //       const token = localStorage.getItem('token');
 //       const response = await axios.put(
-//         'http://localhost:5376/api/auth/profile',
+//         'https://ecomm-backend-blue.vercel.app/api/auth/profile',
 //         formData,
 //         {
 //           headers: { Authorization: `Bearer ${token}` },
@@ -1032,7 +1032,7 @@ export default ProfileInfoForm;
 //       );
 
 //       // Fetch updated user data
-//       const userResponse = await axios.get('http://localhost:5376/api/auth/me', {
+//       const userResponse = await axios.get('https://ecomm-backend-blue.vercel.app/api/auth/me', {
 //         headers: { Authorization: `Bearer ${token}` },
 //       });
 //       updateUser(userResponse.data.user);

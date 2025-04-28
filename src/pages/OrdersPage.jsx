@@ -20,7 +20,7 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5376/api/orders', {
+        const response = await axios.get('https://ecomm-backend-blue.vercel.app/api/orders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Process orders to ensure total_amount is a number

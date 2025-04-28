@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
   const [addresses, setAddresses] = useState([]);
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5376';
+  const API_URL = 'https://ecomm-backend-blue.vercel.app';
 
   // Fetch user and cart on app load
   useEffect(() => {

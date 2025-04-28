@@ -32,7 +32,7 @@ const PasswordForm = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        'http://localhost:5376/api/auth/password',
+        'https://ecomm-backend-blue.vercel.app/api/auth/password',
         {
           currentPassword: formData.currentPassword,
           newPassword: formData.newPassword,
@@ -180,7 +180,7 @@ export default PasswordForm;
 //     try {
 //       const token = localStorage.getItem('token');
 //       const response = await axios.put(
-//         'http://localhost:5376/api/auth/password',
+//         'https://ecomm-backend-blue.vercel.app/api/auth/password',
 //         {
 //           currentPassword: formData.currentPassword,
 //           newPassword: formData.newPassword,

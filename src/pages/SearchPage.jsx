@@ -28,7 +28,7 @@ const SearchPage = () => {
           ...filters
         }).toString();
 
-        const response = await axios.get(`http://localhost:5376/api/products/search?${params}`);
+        const response = await axios.get(`https://ecomm-backend-blue.vercel.app/api/products/search?${params}`);
         setProducts(response.data.products);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch products');

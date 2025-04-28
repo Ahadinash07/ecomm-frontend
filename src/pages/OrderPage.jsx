@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AddressModal from '../Modal/AddressModal';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5376';
+const API_URL = 'https://ecomm-backend-blue.vercel.app';
 
 
 const OrderPage = () => {
